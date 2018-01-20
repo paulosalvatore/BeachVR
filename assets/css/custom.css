@@ -1,3 +1,8 @@
 .tech_info {
 	display: none;
 }
+
+.mapa {
+	float: right;
+	border: 0;
+}

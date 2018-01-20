@@ -7,6 +7,10 @@ $(function(){
 
 	var currentsClicks = $("#current_clicks");
 
+	var apiKey = "AIzaSyDqlu0Y5Q-8sXe_kl1tDYdqs3qSwm8M4LE";
+	var urlBase = "https://www.google.com/maps/embed/v1/place";
+	urlBase += "?key="+apiKey;
+
 	$.get("https://api.myjson.com/bins/838ph", function(data, textStatus, jqXHR){
 		var devices = data.devices;
 
@@ -15,14 +19,31 @@ $(function(){
 		devices.reverse();
 
 		$.each(devices, function(index, deviceInformation){
-			console.log(deviceInformation);
-
 			var newBlock = deviceInformationClone.clone();
 
 			var newBlockInfo = newBlock.find("code");
 
-			var html = '<b>Date (UTC):</b> ' + deviceInformation.dateTimeUtc + '<br>';
+			var html = '<b>Date (Phone):</b> ' + deviceInformation.dateTime + '<br>';
+			html += '<b>Date (UTC):</b> ' + deviceInformation.dateTimeUtc + '<br>';
 			html += '<b>Clicked Button:</b> ' + deviceInformation.clickedButton + '<br>';
+
+			var mapa = newBlock.find(".mapa");
+
+			if (deviceInformation.latitude === "undefined")
+			{
+				mapa.remove();
+
+				html += '<b>Location undefined. Enable "Location Permission" on your phone.</b><br>';
+			}
+			else
+			{
+				html += '<b>Latitude:</b> ' + deviceInformation.latitude + '<br>';
+				html += '<b>Longitude:</b> ' + deviceInformation.longitude + '<br>';
+
+				var url = urlBase + "&q=" + deviceInformation.latitude + "," + deviceInformation.longitude;
+
+				mapa.attr("src", url);
+			}
 
 			html += '<br><button>Display Tech Info</button>';
 			html += '<div class="tech_info"><b>Tech Info:</b><br><br>';
@@ -59,9 +80,7 @@ $(function(){
 				}
 			});
 		});
-	});
-
-	setTimeout(function(){
+	}).done(function(){
 		$("body").resize();
-	}, 500);
+	});
 });
